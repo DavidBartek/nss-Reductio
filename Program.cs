@@ -82,9 +82,8 @@ List<ProductType> productTypes = new List<ProductType>()
     }
 };
 
-// helper function: 
-// returns string with product details
-// accepts "Product" parameter
+// helper function: returns string with product details
+// accepts object w/ type "Product" as parameter
 
 string GenerateProductDetails(Product product)
 {
@@ -112,6 +111,30 @@ string GenerateProductDetails(Product product)
     return productString;
 }
 
+// helper function: returns string with individual product type details
+// accepts object w/ type "ProductType" as parameter
+
+string GenerateProductTypeDetails(ProductType productType)
+{
+    string productTypeString = $"{productType.Category}";
+    return productTypeString;
+}
+
+// helper function: returns string with all product types
+
+string GenerateAllProductTypes()
+{
+    string allProductTypes = null;
+    
+    for (int i = 0; i < productTypes.Count(); i++)
+    {
+        allProductTypes += @$"{i + 1}. {GenerateProductTypeDetails(productTypes[i])}
+";
+    }
+
+    return allProductTypes;
+}
+
 // menu option 1 - view all products
 
 void ViewAllProducts()
@@ -134,9 +157,103 @@ Type any key to return to main menu...");
 
 // menu option 2 - view products by selected type
 
+void ViewProductsByType()
+{
+    Console.Clear();
+    Console.WriteLine(@"Select a product type to view matching products:
+    ");
 
+    Console.WriteLine($"{GenerateAllProductTypes()}");
+
+    string typeSelection = Console.ReadLine().Trim();
+
+    List<Product> filteredProducts = new List<Product>();
+
+    foreach (Product product in products)
+    {
+        if (int.Parse(typeSelection) == product.ProductTypeId)
+        {
+            filteredProducts.Add(product);
+        }
+    }
+
+    Console.Clear();
+    Console.WriteLine(@"Filtered products:
+    ");
+    
+    foreach (Product product in filteredProducts)
+    {
+        Console.WriteLine($"{GenerateProductDetails(product)}");
+    }
+    
+    Console.WriteLine(@"
+Type any key to return to main menu...");
+    Console.ReadKey();
+    Console.Clear();
+}
 
 // menu option 3 - add product to inventory
+
+void AddProduct()
+{
+    Console.Clear();
+    Product newProduct = new Product();
+    string confirmation = null;
+        
+    Console.WriteLine(@"Add new product
+    ");
+
+    Console.WriteLine("New product's name: ");
+    newProduct.Name = null;
+    // error handling necessary?
+    newProduct.Name = Console.ReadLine().Trim();
+    
+    Console.WriteLine("New product's price: ");
+    string priceString = null;
+    // error handling (double.TryParse)
+    priceString = Console.ReadLine().Trim();
+    newProduct.Price = double.Parse(priceString);
+
+    newProduct.Available = true;
+
+    Console.WriteLine("New product's product type (select from below): ");
+    Console.WriteLine($"{GenerateAllProductTypes()}");
+
+    string typeSelection = null;
+    // error handling here (int.TryParse)
+    typeSelection = Console.ReadLine().Trim();
+    newProduct.ProductTypeId = int.Parse(typeSelection);
+
+    Console.WriteLine($@"{GenerateProductDetails(newProduct)}
+    ");
+
+    while (confirmation == null)
+    {
+        Console.WriteLine(@"Is this correct? (Y / N)
+    "); 
+        confirmation = Console.ReadLine().Trim();
+        if (confirmation == "Y")
+        {
+            Console.Clear();
+            products.Add(newProduct);
+            Console.WriteLine(@"New product added!
+            ");
+        }
+        else if (confirmation == "N")
+        {
+            Console.Clear();
+            Console.WriteLine(@"returning to main menu...
+            ");
+            
+        }
+        else
+        {
+            Console.WriteLine($"Please enter a valid response.");
+            confirmation = null;
+        }
+    }
+
+}
 
 // menu option 4 - delete product from inventory
 
@@ -176,9 +293,13 @@ Select an option:
                     break;
                     // throw new NotImplementedException();
                 case "2":
-                    throw new NotImplementedException();
+                    ViewProductsByType();
+                    break;
+                    // throw new NotImplementedException();
                 case "3":
-                    throw new NotImplementedException();
+                    AddProduct();
+                    break;
+                    // throw new NotImplementedException();
                 case "4":
                     throw new NotImplementedException();
                 case "5":
