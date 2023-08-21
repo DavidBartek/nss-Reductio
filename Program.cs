@@ -120,6 +120,16 @@ string GenerateProductTypeDetails(ProductType productType)
     return productTypeString;
 }
 
+// helper function: returns string with individual product TYPE details
+// accepts INTEGER, productTypeId, as parameter
+
+string GenerateProductTypeDetailsById(int typeId)
+{
+    ProductType specificType = productTypes[typeId - 1];
+    string productTypeString = $"{specificType.Category}";
+    return productTypeString;
+}
+
 // helper function: returns string with all product types
 
 string GenerateAllProductTypes()
@@ -309,6 +319,158 @@ void DeleteProduct()
 
 // menu option 5 - update product's details
 
+void UpdateProduct()
+{
+    Console.Clear();
+    Console.WriteLine(@"Please select a product to update.
+    ");
+    for (int i = 0; i < products.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {GenerateProductDetails(products[i])}");
+    }
+    
+    string updateSelectionStr = null;
+    int updateSelectionInt;
+    Product selectedProduct = null;
+    while (updateSelectionStr == null)
+    {
+        try
+        {
+            updateSelectionStr = Console.ReadLine().Trim();
+            if (int.TryParse(updateSelectionStr, out updateSelectionInt))
+            {
+                if (updateSelectionInt > 0 && updateSelectionInt <= products.Count)
+                {
+                    Console.WriteLine($"{products[updateSelectionInt - 1].Name} selected.");
+                    selectedProduct = products[updateSelectionInt - 1];
+                    break;
+                }
+                // else if (updateSelectionInt == 0)
+                // {
+                //     Console.Clear();
+                //     break;
+                // }
+                else
+                {
+                    Console.WriteLine($"Valid menu numbers only please.");
+                    updateSelectionStr = null;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Integers only please.");
+                updateSelectionStr = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ex}");
+        }
+    }
+
+    string productTypeString = GenerateProductTypeDetailsById(selectedProduct.ProductTypeId);
+
+    Console.WriteLine($@"Please select a property to update.
+
+    1. Name: {selectedProduct.Name}
+    2. Price: {selectedProduct.Price}
+    3. Currently available: {selectedProduct.Available}
+    4. Product Type: {productTypeString}
+    ");
+
+    string propertySelectionStr = null;
+    while (propertySelectionStr == null)
+    {
+        try
+        {
+            propertySelectionStr = Console.ReadLine().Trim();
+            if (int.TryParse(propertySelectionStr, out int propertySelectionInt))
+            {
+                if (propertySelectionInt > 0 && propertySelectionInt <= 4)
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine($"Valid numbers only please.");
+                    updateSelectionStr = null;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Integers only please.");
+                updateSelectionStr = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ex}");
+        }
+    }
+
+    // below needs exception handling. Wrap in while loop, then try/catch.
+    // default to current values if user causes exception to be thrown.
+
+    if (propertySelectionStr == "1")
+    {
+        Console.WriteLine($"Please type updated name:");
+        string updatedName = Console.ReadLine().Trim();
+        Console.Clear();
+        Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
+        products[int.Parse(updateSelectionStr) - 1].Name = updatedName;
+    }
+    else if (propertySelectionStr == "2")
+    {
+        Console.WriteLine($"Please type updated price:");
+        double updatedPrice = double.Parse(Console.ReadLine().Trim());
+        Console.Clear();
+        Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
+        products[int.Parse(updateSelectionStr) - 1].Price = updatedPrice;
+    }
+    else if (propertySelectionStr == "3")
+    {
+        Console.WriteLine($"Please type 'T' if available, 'F' if unavailable:");
+        bool updatedAvailability = selectedProduct.Available;
+        string trueOrFalse = null;
+        while (trueOrFalse == null)
+        {
+            trueOrFalse = Console.ReadLine().Trim();
+            if (trueOrFalse == "T")
+            {
+                updatedAvailability = true;
+                break;
+            }
+            else if (trueOrFalse == "F")
+            {
+                updatedAvailability = false;
+                break;
+            }
+            else
+            {
+                Console.WriteLine($"Please type 'T' or 'F'");
+                trueOrFalse = null;
+            }
+        }
+        Console.Clear();
+        Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
+        products[int.Parse(updateSelectionStr) - 1].Available = updatedAvailability;
+    }
+    else if (propertySelectionStr == "4")
+    {
+        Console.WriteLine($"Please select updated product type:");
+        Console.WriteLine($"{GenerateAllProductTypes()}");
+        
+        string updatedProductTypeId = null;
+        // error handling here (int.TryParse)
+        updatedProductTypeId = Console.ReadLine().Trim();
+
+        Console.Clear();
+        Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
+        products[int.Parse(updateSelectionStr) - 1].ProductTypeId = int.Parse(updatedProductTypeId);
+    }
+
+}
+
 
 void Main ()
 {
@@ -355,7 +517,9 @@ Select an option:
                     break;
                     // throw new NotImplementedException();
                 case "5":
-                    throw new NotImplementedException();
+                    UpdateProduct();
+                    break;
+                    // throw new NotImplementedException();
                 
             
             }
