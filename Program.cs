@@ -111,7 +111,7 @@ string GenerateProductDetails(Product product)
     return productString;
 }
 
-// helper function: returns string with individual product type details
+// helper function: returns string with individual product TYPE details
 // accepts object w/ type "ProductType" as parameter
 
 string GenerateProductTypeDetails(ProductType productType)
@@ -257,6 +257,56 @@ void AddProduct()
 
 // menu option 4 - delete product from inventory
 
+void DeleteProduct()
+{
+    Console.Clear();
+    Console.WriteLine(@"Please select a product to delete from inventory, or type '0' to return to the main menu.
+    ");
+    for (int i = 0; i < products.Count; i++)
+    {
+        Console.WriteLine($"{i + 1}. {GenerateProductDetails(products[i])}");
+    }
+    
+    string deletionSelectionStr = null;
+    while (deletionSelectionStr == null)
+    {
+        try
+        {
+            deletionSelectionStr = Console.ReadLine().Trim();
+            if (int.TryParse(deletionSelectionStr, out int deletionSelectionInt))
+            {
+                if (deletionSelectionInt > 0 && deletionSelectionInt <= products.Count)
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{products[deletionSelectionInt - 1].Name} has been deleted.");
+                    products.RemoveAt(deletionSelectionInt - 1);
+                    break;
+                }
+                else if (deletionSelectionInt == 0)
+                {
+                    Console.Clear();
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine($"Valid menu numbers only please.");
+                    deletionSelectionStr = null;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Integers only please.");
+                deletionSelectionStr = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ex}");
+        }
+    }
+    
+}
+
 // menu option 5 - update product's details
 
 
@@ -301,7 +351,9 @@ Select an option:
                     break;
                     // throw new NotImplementedException();
                 case "4":
-                    throw new NotImplementedException();
+                    DeleteProduct();
+                    break;
+                    // throw new NotImplementedException();
                 case "5":
                     throw new NotImplementedException();
                 
