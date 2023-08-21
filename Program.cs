@@ -105,15 +105,18 @@ string GenerateProductDetails(Product product)
         availabilityString = "not available,";
     }
 
-    string typeString = "";
-    foreach (ProductType productType in productTypes)
-    {
-        if (product.ProductTypeId == productType.Id)
-        {
-            typeString = $"{productType.Category}";
-            break;
-        }
-    }
+    // string typeString = "";
+    // foreach (ProductType productType in productTypes)
+    // {
+    //     if (product.ProductTypeId == productType.Id)
+    //     {
+    //         typeString = $"{productType.Category}";
+    //         break;
+    //     }
+    // }
+
+    // refactoredd above loop to use FirstOrDefault method
+    string typeString = productTypes.FirstOrDefault(type => type.Id == product.ProductTypeId).Category;
 
     string productString = $"{product.Name} ({typeString}) - {availabilityString} ${product.Price}";
     return productString;
@@ -185,15 +188,18 @@ void ViewProductsByType()
 
     string typeSelection = Console.ReadLine().Trim();
 
-    List<Product> filteredProducts = new List<Product>();
+    // List<Product> filteredProducts = new List<Product>();
 
-    foreach (Product product in products)
-    {
-        if (int.Parse(typeSelection) == product.ProductTypeId)
-        {
-            filteredProducts.Add(product);
-        }
-    }
+    // foreach (Product product in products)
+    // {
+    //     if (int.Parse(typeSelection) == product.ProductTypeId)
+    //     {
+    //         filteredProducts.Add(product);
+    //     }
+    // }
+
+    // refactored above code to utilize .Where
+    List<Product> filteredProducts = products.Where(product => product.ProductTypeId == int.Parse(typeSelection)).ToList();
 
     Console.Clear();
     Console.WriteLine(@"Filtered products:
@@ -203,6 +209,7 @@ void ViewProductsByType()
     {
         Console.WriteLine($"{GenerateProductDetails(product)}");
     }
+    
     
     Console.WriteLine(@"
 Type any key to return to main menu...");
@@ -510,6 +517,27 @@ void UpdateProduct()
 
 }
 
+// menu option 6 - view all products with property Available == true
+
+void ViewAvailableProducts()
+{
+    Console.Clear();
+    Console.WriteLine(@"All available products in inventory:
+    ");
+    
+    List<Product> availableProducts = products.Where(product => product.Available).ToList();
+
+    foreach (Product product in availableProducts)
+    {
+        string productString = GenerateProductDetails(product);
+        Console.WriteLine(productString);
+    }
+
+    Console.WriteLine(@"
+Type any key to return to main menu...");
+    Console.ReadKey();
+    Console.Clear();
+}
 
 void Main ()
 {
@@ -528,6 +556,7 @@ Select an option:
 3. Add product to inventory
 4. Delete product from inventory
 5. Update product's details
+6. View all available products
 ");
         
         menuSelection = Console.ReadLine().Trim();
@@ -559,6 +588,9 @@ Select an option:
                     UpdateProduct();
                     break;
                     // throw new NotImplementedException();
+                case "6":
+                    ViewAvailableProducts();
+                    break;
                 
             
             }
