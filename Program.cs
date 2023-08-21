@@ -5,56 +5,64 @@
         Name = "cloak",
         Price = 99.99,
         Available = true,
-        ProductTypeId = 1
+        ProductTypeId = 1,
+        DateStocked = new DateTime(2023, 1, 1)
     },
     new Product()
     {
         Name = "magical hat",
         Price = 49.99,
         Available = true,
-        ProductTypeId = 1
+        ProductTypeId = 1,
+        DateStocked = new DateTime(2023, 2, 1)
     },
     new Product()
     {
         Name = "eye of newt",
         Price = 9.99,
         Available = true,
-        ProductTypeId = 2
+        ProductTypeId = 2,
+        DateStocked = new DateTime(2023, 3, 1)
     },
     new Product()
     {
         Name = "deadly poison",
         Price = 4.99,
         Available = false,
-        ProductTypeId = 2
+        ProductTypeId = 2,
+        DateStocked = new DateTime(2023, 4, 1)
     },
     new Product()
     {
         Name = "broomstick",
         Price = 199.99,
         Available = true,
-        ProductTypeId = 3
+        ProductTypeId = 3,
+        DateStocked = new DateTime(2023, 5, 1)
     },
     new Product()
     {
         Name = "code which never has bugs",
         Price = 1000000,
         Available = false,
-        ProductTypeId = 3
+        ProductTypeId = 3,
+        DateStocked = new DateTime(2023, 6, 1)
     },
     new Product()
     {
         Name = "14-inch black walnut",
         Price = 34.99,
         Available = false,
-        ProductTypeId = 4
+        ProductTypeId = 4,
+        DateStocked = new DateTime(2023, 7, 1)
     },
     new Product()
     {
         Name = "9-inch white maple",
         Price = 34.99,
         Available = true,
-        ProductTypeId = 4
+        ProductTypeId = 4,
+        DateStocked = new DateTime(2023, 8, 1)
     },
 };
 
@@ -87,14 +95,14 @@ List<ProductType> productTypes = new List<ProductType>()
 
 string GenerateProductDetails(Product product)
 {
-    string availableString;
+    string availabilityString;
     if (product.Available)
     {
-        availableString = "available for";
+        availabilityString = $"available for {product.DaysOnShelf} days, for";
     }
     else
     {
-        availableString = "not available,";
+        availabilityString = "not available,";
     }
 
     string typeString = "";
@@ -107,7 +115,7 @@ string GenerateProductDetails(Product product)
         }
     }
 
-    string productString = $"{product.Name} ({typeString}) - {availableString} ${product.Price}";
+    string productString = $"{product.Name} ({typeString}) - {availabilityString} ${product.Price}";
     return productString;
 }
 
@@ -233,6 +241,8 @@ void AddProduct()
     // error handling here (int.TryParse)
     typeSelection = Console.ReadLine().Trim();
     newProduct.ProductTypeId = int.Parse(typeSelection);
+
+    newProduct.DateStocked = DateTime.Now;
 
     Console.WriteLine($@"{GenerateProductDetails(newProduct)}
     ");
@@ -376,6 +386,7 @@ void UpdateProduct()
     2. Price: {selectedProduct.Price}
     3. Currently available: {selectedProduct.Available}
     4. Product Type: {productTypeString}
+    5. Date Stocked: {selectedProduct.DateStocked.ToString("yyyy-MM-dd")}
     ");
 
     string propertySelectionStr = null;
@@ -386,7 +397,7 @@ void UpdateProduct()
             propertySelectionStr = Console.ReadLine().Trim();
             if (int.TryParse(propertySelectionStr, out int propertySelectionInt))
             {
-                if (propertySelectionInt > 0 && propertySelectionInt <= 4)
+                if (propertySelectionInt > 0 && propertySelectionInt <= 5)
                 {
                     break;
                 }
@@ -415,17 +426,17 @@ void UpdateProduct()
     {
         Console.WriteLine($"Please type updated name:");
         string updatedName = Console.ReadLine().Trim();
+        products[int.Parse(updateSelectionStr) - 1].Name = updatedName;
         Console.Clear();
         Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
-        products[int.Parse(updateSelectionStr) - 1].Name = updatedName;
     }
     else if (propertySelectionStr == "2")
     {
         Console.WriteLine($"Please type updated price:");
         double updatedPrice = double.Parse(Console.ReadLine().Trim());
+        products[int.Parse(updateSelectionStr) - 1].Price = updatedPrice;
         Console.Clear();
         Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
-        products[int.Parse(updateSelectionStr) - 1].Price = updatedPrice;
     }
     else if (propertySelectionStr == "3")
     {
@@ -451,9 +462,9 @@ void UpdateProduct()
                 trueOrFalse = null;
             }
         }
+        products[int.Parse(updateSelectionStr) - 1].Available = updatedAvailability;
         Console.Clear();
         Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
-        products[int.Parse(updateSelectionStr) - 1].Available = updatedAvailability;
     }
     else if (propertySelectionStr == "4")
     {
@@ -464,10 +475,38 @@ void UpdateProduct()
         // error handling here (int.TryParse)
         updatedProductTypeId = Console.ReadLine().Trim();
 
+        products[int.Parse(updateSelectionStr) - 1].ProductTypeId = int.Parse(updatedProductTypeId);
         Console.Clear();
         Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
-        products[int.Parse(updateSelectionStr) - 1].ProductTypeId = int.Parse(updatedProductTypeId);
     }
+    else if (propertySelectionStr == "5")
+    {
+        while (true)
+        {
+            Console.WriteLine("When was the product initially stocked?");
+            Console.WriteLine("Year (e.g., 2023): ");
+            int newProductYear = int.Parse(Console.ReadLine().Trim());
+            Console.WriteLine("Month (e.g., 7): ");
+            int newProductMonth = int.Parse(Console.ReadLine().Trim());
+            Console.WriteLine("Day (e.g., 31): ");
+            int newProductDay = int.Parse(Console.ReadLine().Trim());
+
+            try
+            {
+                products[int.Parse(updateSelectionStr) - 1].DateStocked = new DateTime(newProductYear, newProductMonth, newProductDay);
+                break;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.Clear();
+                Console.WriteLine($"Date does not exist. Please enter a valid date.");
+            }
+        }
+
+        Console.Clear();
+        Console.WriteLine($"{products[int.Parse(updateSelectionStr) - 1].Name} has been updated.");
+    }
+    
 
 }
 
